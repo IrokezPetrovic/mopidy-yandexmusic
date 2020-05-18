@@ -1,0 +1,7 @@
+.idea
+*.pyc
+__pycache__
+dist/
+venv/
+Mopidy_Yandexmusic.egg-info/
+mopidy.conf
