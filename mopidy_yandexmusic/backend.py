@@ -11,8 +11,12 @@ class YandexMusicBackend(pykka.ThreadingActor, backend.Backend):
     def __init__(self, config: dict, audio: audio):
         super().__init__()
 
-        login = config["yandexmusic"]["login"]
-        password = config["yandexmusic"]["password"]
+        ym_config :dict = config["yandexmusic"]
+
+        login = ym_config["login"]
+        password = ym_config["password"]
+        bitrate = int(ym_config["bitrate"]) if "bitrate" in ym_config else 192
+
         self._config = config
         self._audio = audio
 
@@ -20,7 +24,7 @@ class YandexMusicBackend(pykka.ThreadingActor, backend.Backend):
         track_cache = YMTrackCache()
 
         self.playlists = YandexMusicPlaylistProvider(client, track_cache)
-        self.playback = YandexMusicPlaybackProvider(client, audio, self)
+        self.playback = YandexMusicPlaybackProvider(client, audio, self, bitrate)
         self.library = YandexMusicLibraryProvider(client, track_cache)
 
         self.uri_schemes = ["yandexmusic"]

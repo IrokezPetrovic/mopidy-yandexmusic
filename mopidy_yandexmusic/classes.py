@@ -4,6 +4,14 @@ from yandex_music import Playlist as YMPlaylist, Track as YMTrack
 
 class YMRef(Ref):
     @staticmethod
+    def from_raw(owner: str, playlist_id: str, title: str):
+        uri = f"yandexmusic:playlist:{owner}:{playlist_id}"
+        name = title
+        ref = YMRef(type=Ref.PLAYLIST, uri=uri, name=name)
+
+        return ref
+
+    @staticmethod
     def from_playlist(playlist: YMPlaylist):
         uri = f"yandexmusic:playlist:{playlist.playlist_id}"
         name = playlist.title

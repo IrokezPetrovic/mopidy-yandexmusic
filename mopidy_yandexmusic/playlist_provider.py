@@ -4,6 +4,8 @@ from .classes import YMRef, YMPlaylist
 from typing import List
 from .caches import YMTrackCache
 
+_YM_GENERATED = "yandex-generated"
+
 
 class YandexMusicPlaylistProvider(backend.PlaylistsProvider):
     def __init__(self, client: yandex_music.Client, track_cache: YMTrackCache):
@@ -11,9 +13,13 @@ class YandexMusicPlaylistProvider(backend.PlaylistsProvider):
         self._track_cache = track_cache
 
     def as_list(self) -> List[YMRef]:
-        playlists = self._client.users_playlists_list()
+        yandex_daily = YMRef.from_raw(_YM_GENERATED, "yamusic-daily", "Дневная предложка от Яндекса")
+        yandex_alice = YMRef.from_raw(_YM_GENERATED, "yamusic-origin", "Предложка от Алисы")
+        yandex_dejavu = YMRef.from_raw(_YM_GENERATED, "yamusic-dejavu", "Дежавю от Яндекса")
 
+        playlists = self._client.users_playlists_list()
         refs = list(map(YMRef.from_playlist, playlists))
+        refs.extend([yandex_daily, yandex_alice, yandex_dejavu])
         return refs
 
     def get_items(self, uri: str) -> YMRef:
@@ -37,6 +43,22 @@ class YandexMusicPlaylistProvider(backend.PlaylistsProvider):
                 for track in playlist.tracks:
                     self._track_cache.put(track)
                 return playlist
+            elif ym_userid == _YM_GENERATED:
+                '''
+                Костыль!!!
+                users_playlists_list для генерированного контента возвращает плейлист без треков.
+                Для получения полноценного плейлиста вызываем users_playlists c айдишником полученного плейлиста                    
+                '''
+                foreign_playlist = self._client.users_playlists_list(user_id=playlist_id)
+                ymplaylists = self._client.users_playlists(kind=foreign_playlist[0].kind, user_id=playlist_id)
+                ymplaylist = ymplaylists[0]
+                track_ids = list(map(lambda t: t.track_id, ymplaylist.tracks))
+                ymplaylist.tracks = self._client.tracks(track_ids)
+                playlist = YMPlaylist.from_playlist(ymplaylist)
+                for track in playlist.tracks:
+                    self._track_cache.put(track)
+                return playlist
+
         except Exception as e:
             print("Exception")
 
