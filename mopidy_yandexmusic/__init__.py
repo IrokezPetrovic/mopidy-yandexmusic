@@ -18,6 +18,7 @@ class Extension(ext.Extension):
         schema = super().get_config_schema()
         schema["login"] = config.String()
         schema["password"] = config.Secret()
+        schema["bitrate"] = config.Integer(optional=True)
         return schema
 
     def validate_config(self, config):
