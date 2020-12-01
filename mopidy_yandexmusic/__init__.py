@@ -2,7 +2,7 @@ from mopidy import ext, config
 import pathlib
 from .backend import YandexMusicBackend
 
-__version__ = '0.0.2'
+__version__ = '0.0.5'
 
 
 class Extension(ext.Extension):

@@ -58,6 +58,14 @@ class YandexMusicPlaylistProvider(backend.PlaylistsProvider):
                 for track in playlist.tracks:
                     self._track_cache.put(track)
                 return playlist
+            else:
+                ymplaylist = self._client.users_playlists(playlist_id, user_id=ym_userid)[0]
+                track_ids = list(map(lambda t: t.track_id, ymplaylist.tracks))
+                ymplaylist.tracks = self._client.tracks(track_ids)
+                playlist = YMPlaylist.from_playlist(ymplaylist)
+                for track in playlist.tracks:
+                    self._track_cache.put(track)
+                return playlist
 
         except Exception as e:
             print("Exception")
