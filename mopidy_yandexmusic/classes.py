@@ -1,5 +1,5 @@
-from mopidy.models import Playlist, Track, Ref, fields
-from yandex_music import Playlist as YMPlaylist, Track as YMTrack
+from mopidy.models import Playlist, Track, Ref, fields, Artist
+from yandex_music import Playlist as YMPlaylist, Track as YMTrack, Artist as YArtist
 
 
 class YMRef(Ref):
@@ -34,7 +34,7 @@ class YMPlaylist(Playlist):
         uri = f"yandexmusic:playlist:{playlist.playlist_id}"
         name = playlist.title
         tracks = list(map(YMTrack.from_track, playlist.tracks))
-        return Playlist(uri=uri, name=name, tracks=tracks)
+        return YMPlaylist(uri=uri, name=name, tracks=tracks)
 
 
 class YMTrack(Track):
@@ -43,8 +43,16 @@ class YMTrack(Track):
         uri = f"yandexmusic:track:{track.track_id}"
         name = track.title
         length = track.duration_ms
-
+        artists = list(map(YMArtist.from_artist, track.artists))
         artwork = track.cover_uri
-        return YMTrack(uri=uri, name=name, length=length, artwork=artwork)
+        return YMTrack(uri=uri, name=name, length=length, artwork=artwork, artists=artists)
 
     artwork = fields.String()
+
+
+class YMArtist(Artist):
+    @staticmethod
+    def from_artist(artist: YArtist):
+        uri = f"yandexmusic:artist:{artist.id}"
+        name = artist.name,
+        return YMArtist(uri=uri, name=name[0])

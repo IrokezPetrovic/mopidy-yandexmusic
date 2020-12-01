@@ -43,3 +43,7 @@ v0.0.2 (2020-12-1)
     - Daily generated playlist
     - Playlist with Alice
     - "Dejavu" playlist
+
+v0.0.6 (2020-12-1)
+-------------------
+- Added info about artists
