@@ -13,7 +13,20 @@ class YandexMusicLibraryProvider(backend.LibraryProvider):
     def browse(self, uri):
         return None
 
+    def _lookup_album(self, album_id: str):
+        album = self._client.albums_with_tracks(album_id=album_id)
+        tracks = list()
+        for vol in album.volumes:
+            ymtracks = list(map(YMTrack.from_track, vol))
+            tracks = tracks + ymtracks
+
+        return tracks
+
+
     def lookup(self, uri: str):
+        parts = uri.split(":")
+        if (parts[1] == "album"):
+            return self._lookup_album(parts[2])
         track = self._track_cache.get(uri)
         if track is not None:
             return [track]
