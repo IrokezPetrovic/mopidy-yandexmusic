@@ -22,8 +22,14 @@ class YandexMusicLibraryProvider(backend.LibraryProvider):
         track_id = f"{ymartist_id}:{ymtrack_id}"
         ymtrack = self._client.tracks(track_id)
 
-        track = YMTrack.from_track(ymtrack)
-        return [track]
+        if isinstance(ymtrack, list):
+            tracks = list(map(YMTrack.from_track, ymtrack))
+            for track in tracks:
+                self._track_cache.put(track)
+            return tracks
+        else:
+            track = YMTrack.from_track(ymtrack)
+            return [track]
 
     def get_images(self, uris):
         result = dict()
