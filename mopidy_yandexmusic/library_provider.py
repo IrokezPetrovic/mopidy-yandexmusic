@@ -20,8 +20,10 @@ class YandexMusicLibraryProvider(backend.LibraryProvider):
             ymtracks = list(map(YMTrack.from_track, vol))
             tracks = tracks + ymtracks
 
-        return tracks
+        for track in tracks:
+            self._track_cache.put(track)
 
+        return tracks
 
     def lookup(self, uri: str):
         parts = uri.split(":")

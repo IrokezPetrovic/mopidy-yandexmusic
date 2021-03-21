@@ -4,6 +4,13 @@ Mopidy-Yandexmusic
 `Mopidy <http://www.mopidy.com/>`_ extension for playing music from
 `Yandex.Music <http://music.yandex.ru/>`_.
 
+Build
+============
+
+Build and upload::
+
+    python -m build
+    twine upload dist/Mopidy-Yandexmusic-<VERSION>.tar.gz
 
 Installation
 ============
@@ -11,7 +18,6 @@ Installation
 Install by running::
 
     sudo pip install Mopidy-Yandexmusic
-
 
 Configuration
 =============
